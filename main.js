@@ -96,6 +96,14 @@ function QuestionBlock({ title, answers, hidden, total, questionIndex, onSelect,
     setScore(Number(e.target.value))
   }
 
+  const handleNext = () => {
+    if (typeof score !== "undefined") {
+      onSelect(questionIndex, score)
+    } else {
+      alert('本题答案还没有选择！')
+    }
+  }
+
   return e(
     'div',
     { className: hidden ? 'hidden': '' },
@@ -136,11 +144,11 @@ function QuestionBlock({ title, answers, hidden, total, questionIndex, onSelect,
     ),
     e(
       'div',
-      null,
+      { className: 'footer' },
       e(
         'button',
         {
-          className: `${questionIndex === 0 ? 'hidden' : ''}`,
+          className: `${questionIndex === 0 ? 'v-hidden' : ''}`,
           onClick: onBack
         },
         '上一步'
@@ -148,7 +156,7 @@ function QuestionBlock({ title, answers, hidden, total, questionIndex, onSelect,
       e(
         'button',
         {
-          onClick: () => onSelect(questionIndex, score)
+          onClick: handleNext
         },
         questionIndex !== 6 ? '下一步' : '结论'
       )
@@ -161,16 +169,23 @@ function App () {
   const [total, setTotal] = useState(null)
 
   const onSelect = (questionInex, score) => {
-    setTotal(data => ({ ...data, [questionInex]: score }))
     if (questionInex !== 1) {
       setShowIndex(questionInex + 1)
+      setTotal(data => ({ ...data, [questionInex]: score }))
     } else {
+      // questionInex === 1，重新选第2题时，重置把第3题得分
       setShowIndex(score === 1 ? 3 : 2)
+      setTotal(data => ({ ...data, [questionInex]: score, [2]: undefined }))
     }
   }
 
   const onBack = () => {
-    setShowIndex(showIndex - 1)
+    // 当第2题选“无同类商品”，从第4题返回第2题
+    if (showIndex === 3 && total[1] === 1) {
+      setShowIndex(1)
+    } else {
+      setShowIndex(showIndex - 1)
+    }
   }
 
   console.log('total', total)
@@ -202,7 +217,7 @@ function App () {
 }
 
 function ResultContent ({ total, onBack, onRestart }) {
-  const score = Object.values(total).reduce((a, b) => a + b, 0);
+  const score = Object.values(total).reduce((a, b) => b ? a + b : a, 0);
   let resultIndex
   if (score <= 0) resultIndex = 0
   if (score > 0 && score <=5) resultIndex = 1
@@ -219,27 +234,31 @@ function ResultContent ({ total, onBack, onRestart }) {
     ),
     e(
       'div',
-      null,
+      { className: 'result__desc' },
       description
     ),
     e(
       'div',
-      null,
+      { className: 'result__score' },
       `最终得分：${score}，参考值：${resultMap[resultIndex].name}`
     ),
     e(
-      'button',
-      {
-        onClick: onBack
-      },
-      '返回上一步'
-    ),
-    e(
-      'button',
-      {
-        onClick: onRestart
-      },
-      '重新来一次'
+      'div',
+      { className: 'footer' },
+      e(
+        'button',
+        {
+          onClick: onBack
+        },
+        '返回上一步'
+      ),
+      e(
+        'button',
+        {
+          onClick: onRestart
+        },
+        '重新来一次'
+      )
     )
   )
 }
