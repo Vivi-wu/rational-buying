@@ -7,13 +7,17 @@ body {
   margin: 0;
 }
 
+h2 {
+  font-size: 1.5rem;
+  margin-bottom: 2.5rem;
+}
 ol {
   list-style: none;
   padding-left: 0;
 }
 
 li {
-  margin-bottom: 16px;
+  margin-bottom: 1.5rem;
 }
 
 .radio-label {
@@ -97,10 +101,9 @@ input[type="radio"]:checked ~ .checkmark::after {
 
 .result__desc {
   margin-bottom: 32px;
-  font-size: 1.15rem;
+  font-size: 1.35rem;
 }
 .result__score {
-  font-size: small;
   color: #666;
 }
 
