@@ -53,9 +53,9 @@ const questionAnswerDict = [
   {
     "title": "购买该商品后，本月累计消费的程度？",
     "answers": [
-      { "text": "不超出计划额度的30%", score: 1 },
-      { "text": "超出计划额度的30%", score: 0 },
-      { "text": "超出计划额度的50%", score: -2 },
+      { "text": "不超出月支出计划额度的30%", score: 1 },
+      { "text": "超出月支出计划额度的30%", score: 0 },
+      { "text": "超出月支出计划额度的50%", score: -2 },
     ]
   }
 ];
@@ -81,6 +81,37 @@ const resultMap = [
  */
 const e = React.createElement;
 const { useState, useEffect } = React;
+
+function Calculator() {
+  const [price, setPrice] = useState(undefined)
+  const [budget, setBudget] = useState(undefined)
+
+  return e(
+    'div',
+    { className: 'calculator' },
+    e(
+      'p', null, '算一算：',
+      price && budget && e(
+        'span',
+        { style: { color: 'red' }},
+        `${parseInt(price * Math.pow(10, 10)) / (budget * Math.pow(10, 10)) * 100}%`
+      )
+    ),
+    e(
+      'input',
+      { type: 'number', placeholder: '购买商品预计花费', value: price, onChange: (e) => setPrice(e.target.value) },
+      null
+    ),
+    e(
+      'span', null, ' / '
+    ),
+    e(
+      'input',
+      { type: 'number', placeholder: '月支出计划额度', value: budget, onChange: (e) => setBudget(e.target.value) },
+      null
+    )
+  )
+}
 
 function QuestionBlock({ title, answers, hidden, total, questionIndex, onSelect, onBack }) {
   const [score, setScore] = useState(undefined)
@@ -124,7 +155,7 @@ function QuestionBlock({ title, answers, hidden, total, questionIndex, onSelect,
             null,
             e(
               'label',
-              null,
+              { className: 'radio-label' },
               e(
                 'input',
                 {
@@ -142,6 +173,7 @@ function QuestionBlock({ title, answers, hidden, total, questionIndex, onSelect,
         )
       })
     ),
+    questionIndex === 6 && e(Calculator),
     e(
       'div',
       { className: 'footer' },
