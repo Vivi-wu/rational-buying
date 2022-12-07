@@ -1,8 +1,10 @@
-.hidden {
-  display: none;
-}
-.v-hidden {
-  visibility: hidden;
+body {
+  color: #3C3C3C;
+  -webkit-font-smoothing: antialiased;
+  background-color: #fff;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  margin: 0;
 }
 
 ol {
@@ -13,6 +15,7 @@ ol {
 li {
   margin-bottom: 16px;
 }
+
 .radio-label {
   font-size: large;
 }
@@ -21,21 +24,47 @@ input[type="radio"] {
   margin-right: 10px;
 }
 
+.hidden {
+  display: none;
+}
+.v-hidden {
+  visibility: hidden;
+}
+
+.container {
+  padding: 4rem 1rem;
+}
+
 .footer {
   position: fixed;
   left: 0;
   bottom: 0;
   width: 100%;
-  height: 50px;
-  padding: 10px;
+  height: 4.5rem;
+  padding: 1rem;
   box-sizing: border-box;
   border-top: 1px solid #ccc;
   display: flex;
   justify-content: space-between;
 }
+.footer button {
+  min-width: 4.3rem;
+  border: 1px solid #666;
+  border-radius: 3px;
+  font-size: large;
+  padding-left: 0.6rem;
+  padding-right: 0.6rem;
+}
+.footer button:first-of-type {
+  background-color: white;
+}
+.footer button:last-of-type {
+  background-color: lightblue;
+}
 
 .result__desc {
   margin-bottom: 32px;
+  font-size: 1.15rem;
 }
 .result__score {
   font-size: small;
@@ -55,5 +84,10 @@ input[type="radio"] {
   border-radius: 3px;
   padding-left: 4px;
   margin-bottom: 4px;
-  font-size: 16px;
+  font-size: 1rem;
+}
+.calculator .input__wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }

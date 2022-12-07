@@ -98,17 +98,20 @@ function Calculator() {
       )
     ),
     e(
-      'input',
-      { type: 'number', placeholder: '购买商品预计花费', value: price, onChange: (e) => setPrice(e.target.value) },
-      null
-    ),
-    e(
-      'span', null, ' / '
-    ),
-    e(
-      'input',
-      { type: 'number', placeholder: '月支出计划额度', value: budget, onChange: (e) => setBudget(e.target.value) },
-      null
+      'div', { className: 'input__wrapper'},
+      e(
+        'input',
+        { type: 'number', placeholder: '购买商品预计花费', value: price, onChange: (e) => setPrice(e.target.value) },
+        null
+      ),
+      e(
+        'span', null, ' / '
+      ),
+      e(
+        'input',
+        { type: 'number', placeholder: '月支出计划额度', value: budget, onChange: (e) => setBudget(e.target.value) },
+        null
+      )
     )
   )
 }
@@ -224,7 +227,7 @@ function App () {
 
   return e(
     'div',
-    null,
+    { className: 'container' },
     questionAnswerDict.map((q, index) => {
       return e(QuestionBlock, {
         title: q.title,
