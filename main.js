@@ -75,22 +75,22 @@ const resultMap = [
   }
 ];
 
-function CalculateScore(result) {
-  const val = Object.values(result).reduce((a, b) => a + b, 0);
-  if (val <= 0) return resultMap[0]
-  if (val > 0 && val <=5) return resultMap[1]
-  if (val > 5) return resultMap[2]
-}
-
 
 /**
  * Use React without JSX
  */
 const e = React.createElement;
-const { useState } = React;
+const { useState, useEffect } = React;
 
 function QuestionBlock({ title, answers, hidden, total, questionIndex, onSelect, onBack }) {
-  const [score, setScore] = useState(total ? total[questionIndex] : undefined)
+  const [score, setScore] = useState(undefined)
+
+  useEffect(() => {
+    // 重新开始答题时清空已选值，避免干扰
+    if (total === null) {
+      setScore(undefined)
+    }
+  }, [total])
 
   const handleChange = (e) => {
     setScore(Number(e.target.value))
@@ -202,15 +202,30 @@ function App () {
 }
 
 function ResultContent ({ total, onBack, onRestart }) {
-  const description = CalculateScore(total).description
+  const score = Object.values(total).reduce((a, b) => a + b, 0);
+  let resultIndex
+  if (score <= 0) resultIndex = 0
+  if (score > 0 && score <=5) resultIndex = 1
+  if (score > 5) resultIndex = 2
+  const description = resultMap[resultIndex].description
 
   return e(
     'div',
     null,
     e(
+      'h2',
+      null,
+      '解读'
+    ),
+    e(
       'div',
       null,
       description
+    ),
+    e(
+      'div',
+      null,
+      `最终得分：${score}，参考值：${resultMap[resultIndex].name}`
     ),
     e(
       'button',
