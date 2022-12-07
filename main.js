@@ -159,6 +159,7 @@ function QuestionBlock({ title, answers, hidden, total, questionIndex, onSelect,
             e(
               'label',
               { className: 'radio-label' },
+              a.text,
               e(
                 'input',
                 {
@@ -170,7 +171,9 @@ function QuestionBlock({ title, answers, hidden, total, questionIndex, onSelect,
                 },
                 null
               ),
-              a.text
+              e(
+                'span', { className: 'checkmark' }, null
+              )
             )
           )
         )
