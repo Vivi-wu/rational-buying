@@ -13,14 +13,14 @@ const questionAnswerDict = [
   {
     "title": "家里是否有该商品的同类商品？",
     "answers": [
-      { "text": "无同类商品", score: 1 },
-      { "text": "有同类商品", score: 0 }
+      { "text": "无同类商品", score: 1 }, // 转第4题
+      { "text": "有同类商品", score: 0 } // 转第3题
     ]
   },
   {
     "title": "同类商品的使用情况？",
     "answers": [
-      { "text": "已用完且没有囤货", score: 1 },
+      { "text": "已用完/不好用", score: 1 },
       { "text": "快用完且没有囤货", score: 0 },
       { "text": "还有很多", score: -1 },
     ]
@@ -58,9 +58,7 @@ const questionAnswerDict = [
       { "text": "超出计划额度的50%", score: -2 },
     ]
   }
-]
-
-let totalScores = []
+];
 
 const resultMap = [
   {
@@ -75,21 +73,15 @@ const resultMap = [
     "name": "6 ~ 8 分",
     "description": "必要性消费。遇到好价赶紧买吧～"
   }
-]
+];
 
-function CalculateScore() {
-  let result = 0
-  if (result <= 0) return resultMap[0]
-  if (result > 0 && result <=5) return resultMap[1]
-  if (result > 5) return resultMap[2]
+function CalculateScore(result) {
+  const val = Object.values(result).reduce((a, b) => a + b, 0);
+  if (val <= 0) return resultMap[0]
+  if (val > 0 && val <=5) return resultMap[1]
+  if (val > 5) return resultMap[2]
 }
 
-function CumulateScores(score, question) {
-  totalScores.push({
-    question,
-    score
-  })
-}
 
 /**
  * Use React without JSX
@@ -97,14 +89,20 @@ function CumulateScores(score, question) {
 const e = React.createElement;
 const { useState } = React;
 
-function QuestionBlock({ title, answers, hidden }) {
+function QuestionBlock({ title, answers, hidden, total, questionIndex, onSelect, onBack }) {
+  const [score, setScore] = useState(total ? total[questionIndex] : undefined)
+
+  const handleChange = (e) => {
+    setScore(Number(e.target.value))
+  }
+
   return e(
-    'li',
+    'div',
     { className: hidden ? 'hidden': '' },
     e(
       'h2',
       null,
-      title
+      `${questionIndex + 1}、${title}`
     ),
     e(
       'ol',
@@ -112,28 +110,122 @@ function QuestionBlock({ title, answers, hidden }) {
       answers.map((a, index) => {
         return e(
           'li',
-          { type: 'A', key: index },
-          a.text
+          { key: index },
+          e(
+            'div',
+            null,
+            e(
+              'label',
+              null,
+              e(
+                'input',
+                {
+                  type: 'radio',
+                  name: `decision_${questionIndex}`,
+                  value: a.score,
+                  checked: a.score === score,
+                  onChange: handleChange,
+                },
+                null
+              ),
+              a.text
+            )
+          )
         )
       })
+    ),
+    e(
+      'div',
+      null,
+      e(
+        'button',
+        {
+          className: `${questionIndex === 0 ? 'hidden' : ''}`,
+          onClick: onBack
+        },
+        '上一步'
+      ),
+      e(
+        'button',
+        {
+          onClick: () => onSelect(questionIndex, score)
+        },
+        questionIndex !== 6 ? '下一步' : '结论'
+      )
     )
   )
 }
 
 function App () {
   const [showIndex, setShowIndex] = useState(0)
+  const [total, setTotal] = useState(null)
+
+  const onSelect = (questionInex, score) => {
+    setTotal(data => ({ ...data, [questionInex]: score }))
+    if (questionInex !== 1) {
+      setShowIndex(questionInex + 1)
+    } else {
+      setShowIndex(score === 1 ? 3 : 2)
+    }
+  }
+
+  const onBack = () => {
+    setShowIndex(showIndex - 1)
+  }
+
+  console.log('total', total)
 
   return e(
-    'ol',
+    'div',
     null,
     questionAnswerDict.map((q, index) => {
       return e(QuestionBlock, {
         title: q.title,
         answers: q.answers,
         hidden: index !== showIndex,
+        total,
+        questionIndex: index,
+        onSelect,
+        onBack,
         key: index
       })
+    }),
+    showIndex === 7 && e(ResultContent, {
+      total,
+      onBack,
+      onRestart: () => {
+        setShowIndex(0)
+        setTotal(null)
+      }
     })
+  )
+}
+
+function ResultContent ({ total, onBack, onRestart }) {
+  const description = CalculateScore(total).description
+
+  return e(
+    'div',
+    null,
+    e(
+      'div',
+      null,
+      description
+    ),
+    e(
+      'button',
+      {
+        onClick: onBack
+      },
+      '返回上一步'
+    ),
+    e(
+      'button',
+      {
+        onClick: onRestart
+      },
+      '重新来一次'
+    )
   )
 }
 
